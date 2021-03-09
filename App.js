@@ -1,35 +1,30 @@
 import React, { useState } from 'react';
 import { Button, StyleSheet, TextInput, View, Text, ScrollView, FlatList } from "react-native";
+import ContatoInput from './components/ContatoInput';
+import ContatoItem from './components/ContatoItem';
+
 
 export default function App() {
   const [contatos, setContatos] = useState([]);
-  const [nomeContato, setNome] = useState("");
-  const [telContato, setTel] = useState("");
   const [contadorContatos, setContadorContatos] = useState(0);
 
 
-  const capturarContato = (contato) =>{
-    setNome(contato);
+  const removerContato = (keyASerRemovida) => {
+    setContatos (contatos => {
+      return contatos.filter((contato) => {
+        return contato.key !== keyASerRemovida
+      })
+    })
   }
-  const capturarTelefone = (contato) =>{
-    setTel(contato);
-  }
-
-  const adicionarContato = () =>{
+  const adicionarContato = (contato) =>{
     setContatos((contatos) => {
       setContadorContatos(contadorContatos + 1);
-      return [...contatos, {key: contadorContatos.toString(),nome: nomeContato, telefone: telContato}]
+      return [...contatos, {key: contadorContatos.toString(),nome: contato.nome, telefone: contato.telefone}]
     });
   }
   return (
     <View style={styles.container}>
-      <View style={styles.contatoTextView}>
-          <TextInput style={styles.contatoText} placeholder='Nome do contato' onChangeText={capturarContato}/>
-          <TextInput style={styles.contatoText} placeholder='Telefone do contato' onChangeText={capturarTelefone}/>
-          <View style={styles.contatoButtonView}> 
-              <Button title='Adicionar Contato' onPress={adicionarContato} />
-          </View>
-      </View>
+    <ContatoInput onAdicionarContato ={adicionarContato}/>
       <View style={styles.flatListView}>
         <Text style={styles.contatosNaLista}>Contatos: </Text>
       </View>
@@ -38,9 +33,12 @@ export default function App() {
           data={contatos}
           renderItem={
             contato =>(
-              <View style={styles.contatosNaLista}>
-                <Text>{contato.item.nome} {contato.item.telefone} </Text>
-              </View>
+              <ContatoItem 
+              contato={contato.item.nome} 
+              tel={contato.item.telefone}
+              chave ={contato.item.key}
+              onDelete={removerContato}
+              />
             )
           }
         />
